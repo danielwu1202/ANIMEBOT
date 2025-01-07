@@ -21,6 +21,8 @@ def callback():
     # 確認請求是否合法
     signature = request.headers['X-Line-Signature']
     body = request.get_data(as_text=True)
+    print("Request Body:", body)
+    print("X-Line-Signature:", signature)
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:

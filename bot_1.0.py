@@ -1,50 +1,38 @@
 from flask import Flask, abort, request
-from linebot.v3 import WebhookHandler
-from linebot.v3.exceptions import InvalidSignatureError
-from linebot.v3.messaging import (
-    ApiClient,
-    Configuration,
-    MessagingApi,
-    ReplyMessageRequest,
-    TextMessage,
-)
-from linebot.v3.webhooks import MessageEvent, TextMessageContent
+from linebot import LineBotApi, WebhookHandler
+from linebot.exceptions import InvalidSignatureError
+from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
+# 初始化 Flask 應用
 app = Flask(__name__)
 
-configuration = Configuration(access_token='YOUR_CHANNEL_ACCESS_TOKEN')
-handler = WebhookHandler('YOUR_CHANNEL_SECRET')
+# Line Bot API 和 Webhook Handler 初始化
+LINE_CHANNEL_ACCESS_TOKEN = 'bNmJeiAzOgqF+lva1GofLFs52qHOuRVAntqO4Qt/CnY32ImJ3yq7558nR2H4OwHJXJTqNrNslzW2r2kiPRSxU2NPhyVgnsCdSgQoraFd/hAzz7+9yf3Z1wEsWm9fUmRWeqbeVy60Kzjr/AxXa9rO2AdB04t89/1O/w1cDnyilFU='
+LINE_CHANNEL_SECRET = 'cf474f269c00a7520590347a8f46ba28'
+line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
+handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
 
+# Webhook 路徑，用來接收 Line 平台的事件
 @app.route("/callback", methods=['POST'])
 def callback():
-    # get X-Line-Signature header value
+    # 確認請求是否合法
     signature = request.headers['X-Line-Signature']
-
-    # get request body as text
     body = request.get_data(as_text=True)
-    app.logger.info("Request body: " + body)
-
-    # handle webhook body
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
-        app.logger.info("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
-
     return 'OK'
 
 
-@handler.add(MessageEvent, message=TextMessageContent)
+# 回應訊息的處理邏輯
+@handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    with ApiClient(configuration) as api_client:
-        line_bot_api = MessagingApi(api_client)
-        line_bot_api.reply_message_with_http_info(
-            ReplyMessageRequest(
-                reply_token=event.reply_token, messages=[TextMessage(text=event.message.text)]
-            )
-        )
+    # 回覆用戶傳來的相同訊息
+    reply_text = event.message.text
+    line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply_text))
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(port=8000)

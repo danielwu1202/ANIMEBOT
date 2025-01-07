@@ -1,3 +1,5 @@
+import os
+
 from flask import Flask, abort, request
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
@@ -35,4 +37,5 @@ def handle_message(event):
 
 
 if __name__ == "__main__":
-    app.run(port=8000)
+    port = int(os.environ.get("PORT", 8000))  # Render 分配的埠號，預設值為 8000
+    app.run(host="0.0.0.0", port=port)  # 監聽所有外部請求

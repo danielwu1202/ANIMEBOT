@@ -14,8 +14,9 @@ LINE_CHANNEL_SECRET = '你的 Channel Secret'
 line_bot_api = LineBotApi(LINE_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(LINE_CHANNEL_SECRET)
 
-print(line_bot_api)
-print(handler)
+print('config')
+print(LINE_CHANNEL_ACCESS_TOKEN)
+print(LINE_CHANNEL_SECRET)
 
 
 # Webhook 路徑，用來接收 Line 平台的事件

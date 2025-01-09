@@ -6,9 +6,6 @@ from random import randint
 def anime_crawler():
     headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'}
 
-    proxies = {
-    "http": "114.35.140.157:808"}
-
     print("L9: request start")
 
     response = requests.get("https://ani.gamer.com.tw/", headers=headers, proxies=proxies)

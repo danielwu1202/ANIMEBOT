@@ -10,6 +10,10 @@ def anime_crawler():
 
     response = requests.get("https://ani.gamer.com.tw/", headers=headers)
     print(response.status_code)
+
+    if response.status_code != 200:
+        return "網站請求失敗"
+
     content = response.content.decode()
     html = etree.HTML(content)
 

@@ -12,10 +12,11 @@ def anime_crawler():
     print(response.status_code)
 
     if response.status_code != 200:
+        content = response.content.decode()
+        html = etree.HTML(content)
+        print(html)
         return "網站請求失敗"
 
-    content = response.content.decode()
-    html = etree.HTML(content)
 
     print("L16: request finish")
 

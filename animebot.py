@@ -14,7 +14,7 @@ def anime_crawler():
     if response.status_code != 200:
         content = response.content.decode()
         html = etree.HTML(content)
-        print(html)
+        print(content)
         return "網站請求失敗"
 
 

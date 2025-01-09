@@ -8,7 +8,7 @@ def anime_crawler():
 
     print("L9: request start")
 
-    response = requests.get("https://ani.gamer.com.tw/", headers=headers, proxies=proxies)
+    response = requests.get("https://ani.gamer.com.tw/", headers=headers)
     print(response.status_code)
 
     if response.status_code != 200:

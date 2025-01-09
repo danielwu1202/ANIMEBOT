@@ -3,65 +3,61 @@ from lxml import etree
 import time
 from random import randint
 
-headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'}
+def anime_crawler():
+    headers = {'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36'}
 
-print("L6: request start")
+    print("L9: request start")
 
-response = requests.get("https://ani.gamer.com.tw/", headers=headers)
-print(response.status_code)
-content = response.content.decode()
-html = etree.HTML(content)
+    response = requests.get("https://ani.gamer.com.tw/", headers=headers)
+    print(response.status_code)
+    content = response.content.decode()
+    html = etree.HTML(content)
 
-print("L13: request finish")
+    print("L16: request finish")
 
-titles = html.xpath(f"//*[@class='animate-theme-list']/div[@class='theme-title-block']/h1/text()")
-title_index = [i-1 for i, item in enumerate(titles) if "授權到期節目" in item]
+    titles = html.xpath(f"//*[@class='animate-theme-list']/div[@class='theme-title-block']/h1/text()")
+    title_index = [i-1 for i, item in enumerate(titles) if "授權到期節目" in item]
 
-print(title_index)
+    if len(title_index) != 0:
+        print(title_index)
 
-anime_name = []
-anime_episode = []
-anime_year = []
-anime_urls = []
-removal_date  = []
+        anime_name = []
+        anime_episode = []
+        anime_year = []
+        anime_urls = []
+        removal_date  = []
 
+        for index in title_index:
+            names = html.xpath(f"//*[@id='blockAnimeNewArrive-{str(index)}']/div[2]/a/div[2]/div[2]/p/text()")
+            anime_name.extend([name.strip() for name in names])
 
-for index in title_index:
-    names = html.xpath(f"//*[@id='blockAnimeNewArrive-{str(index)}']/div[2]/a/div[2]/div[2]/p/text()")
-    anime_name.extend([name.strip() for name in names])
+            episodes = html.xpath(f"//*[@id='blockAnimeNewArrive-{str(index)}']/div[2]/a/div[2]/div[2]/div/span/text()")
+            anime_episode.extend([episode.strip() for episode in episodes])
 
-    episodes = html.xpath(f"//*[@id='blockAnimeNewArrive-{str(index)}']/div[2]/a/div[2]/div[2]/div/span/text()")
-    anime_episode.extend([episode.strip() for episode in episodes])
+            year = html.xpath(f"//*[@id='blockAnimeNewArrive-{str(index)}']/div[2]/a/div[2]/div[2]/div/p/text()")
+            anime_year.extend([y.strip()[3:] for y in year])
 
-    year = html.xpath(f"//*[@id='blockAnimeNewArrive-{str(index)}']/div[2]/a/div[2]/div[2]/div/p/text()")
-    anime_year.extend([y.strip()[3:] for y in year])
+            urls = html.xpath(f"//*[@id='blockAnimeNewArrive-{str(index)}']/div[2]/a/@href")
+            anime_urls.extend(["https://ani.gamer.com.tw/" + url for url in urls])
 
-    urls = html.xpath(f"//*[@id='blockAnimeNewArrive-{str(index)}']/div[2]/a/@href")
-    anime_urls.extend(["https://ani.gamer.com.tw/" + url for url in urls])
+        for url in anime_urls:
+            anime_response = requests.get(url, headers=headers)
+            print(url, anime_response.status_code)
+            anime_content = anime_response.content.decode()
+            anime_html = etree.HTML(anime_content)
 
+            removal_date.append("".join(d[7:] for d in anime_html.xpath("//div[2]/div[1]/section/div[2]/div/p[2]/text()")))
 
-print(anime_name)
-print("===============================")
-print(anime_episode)
-print("===============================")
-print(anime_year)
-print("===============================")
-print(anime_urls)
-print("===============================")
-
-
-for url in anime_urls:
-    anime_response = requests.get(url, headers=headers)
-    print(url, anime_response.status_code)
-    anime_content = anime_response.content.decode()
-    anime_html = etree.HTML(anime_content)
-
-    removal_date.append("".join(d[7:] for d in anime_html.xpath("//div[2]/div[1]/section/div[2]/div/p[2]/text()")))
-
-    time.sleep(randint(5, 10))
+            time.sleep(randint(5, 10))
 
 
-print(removal_date)
+        return list(zip(anime_name, anime_episode, anime_year, anime_urls, removal_date))
+
+    else:
+        return "無授權即將到期動畫"
+
+
+print(anime_crawler())
 
 
 '''

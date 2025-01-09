@@ -43,12 +43,16 @@ def handle_message(event):
 
         reply = ''
 
-        for anime in anime_info:
-            reply += f"動畫名稱：{anime[0]}\n"
-            reply += f"動畫集數：{anime[1]}\n"
-            reply += f"動畫年份：{anime[2]}\n"
-            reply += f"動畫網址：{anime[3]}\n"
-            reply += f"下架日期：{anime[4]}\n\n"
+        if anime_info == '無授權即將到期動畫':
+            reply = anime_info
+
+        else:
+            for anime in anime_info:
+                reply += f"動畫名稱：{anime[0]}\n"
+                reply += f"動畫集數：{anime[1]}\n"
+                reply += f"動畫年份：{anime[2]}\n"
+                reply += f"動畫網址：{anime[3]}\n"
+                reply += f"下架日期：{anime[4]}\n\n"
 
         line_bot_api.reply_message(event.reply_token, TextSendMessage(text=reply))
 

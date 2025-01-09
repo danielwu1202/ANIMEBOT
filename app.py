@@ -46,6 +46,9 @@ def handle_message(event):
         if anime_info == '無授權即將到期動畫':
             reply = anime_info
 
+        elif anime_info == '網站請求失敗':
+            reply = anime_info
+
         else:
             for anime in anime_info:
                 reply += f"動畫名稱：{anime[0]}\n"

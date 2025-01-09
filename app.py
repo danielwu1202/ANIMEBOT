@@ -6,7 +6,6 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
 from animebot import anime_crawler
-from animebot_selenium import selenium_crawler
 
 # 初始化 Flask 應用
 app = Flask(__name__)
@@ -40,7 +39,6 @@ def handle_message(event):
     user_message = event.message.text
 
     if user_message == '動畫':
-        selenium_crawler()
         anime_info = anime_crawler()
 
         reply = ''
